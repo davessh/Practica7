@@ -6,8 +6,8 @@ public class TarjetaComodin extends Tarjeta {
 
     @Override
     public void activarEfectoEspecial() {
-        // A modo de prueba
-        System.out.println("Comodin activo, puede emparejarse con cualquier tarjeta.");
+        // Podrías implementar algo visual o sonoro cuando se revela
+        System.out.println("¡Has descubierto un comodín!");
     }
 
     @Override
@@ -17,8 +17,8 @@ public class TarjetaComodin extends Tarjeta {
 
     @Override
     public boolean esPareja(Tarjeta otraTarjeta) {
-        // Se empareja la tarjeta con cualquiera que no tenga pareja
+        // El comodín puede hacer pareja con cualquier tarjeta que aún no tenga pareja
+        if (otraTarjeta == null || otraTarjeta == this) return false;
         return !otraTarjeta.tienePareja();
     }
 }
-
