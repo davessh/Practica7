@@ -1,18 +1,18 @@
-public class TarjetaComodin extends Tarjeta {
 
+class TarjetaComodin extends Tarjeta {
     public TarjetaComodin(String rutaImagen, String identificador) {
         super(rutaImagen, identificador);
+    }
+
+    @Override
+    public boolean tieneEfectoEspecial() {
+        return true;
     }
 
     @Override
     public void activarEfectoEspecial() {
         // Podrías implementar algo visual o sonoro cuando se revela
         System.out.println("¡Has descubierto un comodín!");
-    }
-
-    @Override
-    public boolean tieneEfectoEspecial() {
-        return true;
     }
 
     @Override
