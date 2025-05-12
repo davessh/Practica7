@@ -1,7 +1,16 @@
-public class TarjetaNormal extends Tarjeta {
+
+class TarjetaNormal extends Tarjeta {
+    private String tipoEmparejamiento;
 
     public TarjetaNormal(String rutaImagen, String identificador) {
         super(rutaImagen, identificador);
+        this.tipoEmparejamiento = extraerTipoDesdeIdentificador(identificador);
+    }
+
+    // Se obtiene el identificador del tipo de tarjeta
+    private String extraerTipoDesdeIdentificador(String id) {
+        String[] partes = id.split("_");
+        return partes[partes.length - 1];
     }
 
     @Override
@@ -11,16 +20,19 @@ public class TarjetaNormal extends Tarjeta {
 
     @Override
     public void activarEfectoEspecial() {
-        //No tiene efecto especial
+        // No tiene efecto especial
     }
 
     @Override
     public boolean esPareja(Tarjeta otraTarjeta) {
-        // Solo hace pareja si el identificador es igual y ambas son TarjetaNormal
+        // Solo compararemos TarjetasPorTipo
         if (otraTarjeta instanceof TarjetaNormal) {
-            return this.identificador.equals(otraTarjeta.getIdentificador());
+            TarjetaNormal otra = (TarjetaNormal) otraTarjeta;
+
+            // Aseguramos que sean del mismo tipo y no de la misma imagen (identificador)
+            return this.tipoEmparejamiento.equals(otra.tipoEmparejamiento) &&
+                    !this.identificador.equals(otra.identificador);
         }
         return false;
     }
 }
-
