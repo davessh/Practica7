@@ -17,6 +17,11 @@ public class TableroMemorama extends JFrame {
     private JLabel[] etiquetasJugadores;
     private JPanel panelJugadores;
     private JuegoMemorama memorama;
+    private int jugadorActual = 0;
+    private int[] puntuaciones;
+    private String[] nombresJugadores;
+    private JLabel etiquetaTurno;
+    private int paresEncontradosEnTurno = 0;
 
     public TableroMemorama(TarjetaNormal[] tarjetasParam, String modoJuego, String[] nombresJugadores, int[] puntuacionesIniciales) {
         setTitle("Juego Memorama");
@@ -33,6 +38,7 @@ public class TableroMemorama extends JFrame {
         this.tarjetas = tarjetasParam;
         this.modoJuego = modoJuego;
         configurarPanelJugadores(nombresJugadores, puntuacionesIniciales);
+        configurarPanelTurnos();
 
         JPanel panelModoJuego = new JPanel();
         JLabel modoJuegoLabel = new JLabel("Modo de juego: " + modoJuego.toUpperCase());
@@ -101,6 +107,34 @@ public class TableroMemorama extends JFrame {
         add(panelJugadores, BorderLayout.NORTH);
     }
 
+    private void configurarPanelTurnos() {
+        if (nombresJugadores == null || nombresJugadores.length == 0) {
+            nombresJugadores = new String[]{"Jugador 1"};
+            puntuaciones = new int[]{0};
+        }
+        JPanel panelTurno = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
+        panelTurno.setBackground(new Color(240, 240, 240));
+
+        etiquetaTurno = new JLabel("Turno de: " + nombresJugadores[jugadorActual]);
+        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 16));
+        etiquetaTurno.setForeground(Color.RED);
+
+        panelTurno.add(etiquetaTurno);
+        add(panelTurno, BorderLayout.SOUTH);
+    }
+
+    private void actualizarPuntuacion() {
+        for (int i = 0; i < nombresJugadores.length; i++) {
+            etiquetasJugadores[i].setText(
+                    nombresJugadores[i] + ": " + puntuaciones[i] + " puntos");
+        }
+    }
+
+    private void cambiarTurno() {
+        jugadorActual = (jugadorActual + 1) % nombresJugadores.length;
+        etiquetaTurno.setText("Turno de: " + nombresJugadores[jugadorActual]);
+        paresEncontradosEnTurno = 0;
+    }
 
     private void botonClickeado(int indice) {
         // Verificar si el botón ya está descubierto o si estamos esperando
@@ -145,6 +179,9 @@ public class TableroMemorama extends JFrame {
                 // Verificamos si las tarjetas forman una pareja
                 if (tarjetas[primerIndice] != null && tarjetas[indice] != null &&
                         tarjetas[primerIndice].getIdentificador().equals(tarjetas[indice].getIdentificador())) {
+                    puntuaciones[jugadorActual]++;
+                    paresEncontradosEnTurno++;
+                    actualizarPuntuacion();
                     //JOptionPane.showMessageDialog(this, "Pareja encontrada");
                     botones[primerIndice].setEnabled(false);
                     botones[indice].setEnabled(false);
@@ -166,16 +203,16 @@ public class TableroMemorama extends JFrame {
                     });
                     timer.setRepeats(false);
                     timer.start();
+
+                    if (paresEncontradosEnTurno == 0) {
+                        cambiarTurno();
+                    } else {
+                        paresEncontradosEnTurno = 0;
+                    }
                 }
             }
             primerBotonSeleccionado = -1;
         }
     }
-
-    public static void main(String[] args) {
-        TarjetaNormal[] tarjetas = JuegoMemorama.crearTarjetasAnimales();
-        String[] nombresJugadores = {"Ana", "Carlos","Pablo"};
-        int[] puntuacionesIniciales = {0, 0,0};
-        new TableroMemorama(tarjetas,"animales",nombresJugadores,puntuacionesIniciales);
     }
-}
+
