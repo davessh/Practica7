@@ -205,12 +205,11 @@ public class MemoramaGrafico {
 
     private void verificarPar() {
         if (primeraSeleccion != null && segundaSeleccion != null) {
-            ImageIcon img1 = (ImageIcon) primeraSeleccion.getClientProperty("imagen");
-            ImageIcon img2 = (ImageIcon) segundaSeleccion.getClientProperty("imagen");
+            TarjetaNormal img1 = (TarjetaNormal) primeraSeleccion.getClientProperty("TarjetaNormal");
+            TarjetaNormal img2 = (TarjetaNormal) segundaSeleccion.getClientProperty("TarjetaNormal");
 
-            if (img1.getDescription() == null || img2.getDescription() == null) {
-                // Voltear las cartas de nuevo si no tienen descripción
-                ImageIcon cubierta = new ImageIcon("ruta/a/cubierta.jpg");
+            if (img1.getTipo() == null || img2.getTipo() == null) {
+                ImageIcon cubierta = new ImageIcon("C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\animales\\portadaAnimales.png");
                 primeraSeleccion.setIcon(cubierta);
                 segundaSeleccion.setIcon(cubierta);
                 primeraSeleccion = null;
@@ -218,27 +217,20 @@ public class MemoramaGrafico {
                 return;
             }
 
-            String nombre1 = img1.getDescription();
-            String nombre2 = img2.getDescription();
-            String tipo1 = nombre1.split("_")[1].replace(".jpg", "");
-            String tipo2 = nombre2.split("_")[1].replace(".jpg", "");
+            String tipo1 = img1.getTipo();
+            String tipo2 = img2.getTipo();
 
             if (tipo1.equals(tipo2)) {
-                // Es un par - deshabilitar los botones
                 primeraSeleccion.setEnabled(false);
                 segundaSeleccion.setEnabled(false);
             } else {
-                // No es un par - voltear las cartas de nuevo y permitir que sean seleccionadas nuevamente
-                ImageIcon cubierta = new ImageIcon("ruta/a/cubierta.jpg");
+                ImageIcon cubierta = new ImageIcon("C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\animales\\portadaAnimales.png");
                 primeraSeleccion.setIcon(cubierta);
                 segundaSeleccion.setIcon(cubierta);
-
-                // Asegurarse de que los botones pueden ser clickeados de nuevo
                 primeraSeleccion.setEnabled(true);
                 segundaSeleccion.setEnabled(true);
             }
 
-            // Resetear las selecciones
             primeraSeleccion = null;
             segundaSeleccion = null;
         }
@@ -300,17 +292,13 @@ public class MemoramaGrafico {
         Collections.shuffle(tarjetasParaJuego);
 
         // Crear botones para cada tarjeta
+        ImageIcon cubierta = new ImageIcon("C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\animales\\portadaAnimales.png");
         for (ImageIcon imagen : tarjetasParaJuego) {
             JButton tarjeta = new JButton();
             tarjeta.setPreferredSize(new Dimension(120, 150));
             tarjeta.setBorder(BorderFactory.createLineBorder(Color.WHITE, 3));
-
-            // Asignar imagen oculta (cubierta)
-            ImageIcon cubierta = new ImageIcon("ruta/a/cubierta.jpg");
             tarjeta.setIcon(cubierta);
-
-            // Guardar la imagen real como propiedad del botón
-            tarjeta.putClientProperty("imagen", imagen);
+            tarjeta.putClientProperty("TarjetaNormal", tarjeta);
 
             // ActionListener para voltear la tarjeta
             tarjeta.addActionListener(e -> {

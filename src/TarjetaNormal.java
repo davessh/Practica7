@@ -7,7 +7,6 @@ class TarjetaNormal extends Tarjeta {
         this.tipoEmparejamiento = extraerTipoDesdeIdentificador(identificador);
     }
 
-    // Se obtiene el identificador del tipo de tarjeta
     private String extraerTipoDesdeIdentificador(String id) {
         String[] partes = id.split("_");
         return partes[partes.length - 1];
@@ -16,6 +15,18 @@ class TarjetaNormal extends Tarjeta {
     @Override
     public boolean tieneEfectoEspecial() {
         return false;
+    }
+
+    public String getTipoEmparejamiento() {
+        return tipoEmparejamiento;
+    }
+
+    public String getIdentificador() {
+        return identificador;
+    }
+
+    public String getRutaImagen() {
+        return rutaImagen;
     }
 
     @Override
@@ -34,5 +45,13 @@ class TarjetaNormal extends Tarjeta {
                     !this.identificador.equals(otra.identificador);
         }
         return false;
+    }
+
+    public String getTipo() {
+        return tipoEmparejamiento;
+    }
+
+    public String toString() {
+        return identificador + "_" + rutaImagen;
     }
 }
