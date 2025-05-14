@@ -8,6 +8,7 @@ public class JuegoMemorama {
     private int parejasEncontradas;
     private int intentosRealizados;
 
+
     /**
      * Constructor de la clase JuegoMemorama
      * Inicializa un tablero de 3x6
