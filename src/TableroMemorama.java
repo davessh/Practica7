@@ -37,14 +37,24 @@ public class TableroMemorama extends JFrame {
         // Asignar las tarjetas recibidas al campo de la clase
         this.tarjetas = tarjetasParam;
         this.modoJuego = modoJuego;
+        this.nombresJugadores = nombresJugadores;
+        this.puntuaciones = puntuacionesIniciales;
         configurarPanelJugadores(nombresJugadores, puntuacionesIniciales);
         configurarPanelTurnos();
 
-        JPanel panelModoJuego = new JPanel();
+        JPanel panelInferior = new JPanel(new BorderLayout());
+        JPanel panelModoJuego = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JLabel modoJuegoLabel = new JLabel("Modo de juego: " + modoJuego.toUpperCase());
         modoJuegoLabel.setFont(new Font("Arial", Font.BOLD, 18));
         panelModoJuego.add(modoJuegoLabel);
-        add(panelModoJuego, BorderLayout.SOUTH);
+        panelInferior.add(panelModoJuego, BorderLayout.WEST);
+        JPanel panelTurno = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        etiquetaTurno = new JLabel("Turno de: " + nombresJugadores[jugadorActual]);
+        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 16));
+        etiquetaTurno.setForeground(Color.RED);
+        panelTurno.add(etiquetaTurno);
+        panelInferior.add(panelTurno, BorderLayout.EAST);
+        add(panelInferior, BorderLayout.SOUTH);
 
         imagenes = new ArrayList<>();
         for (int i = 0; i < tarjetas.length; i++) {
@@ -99,8 +109,8 @@ public class TableroMemorama extends JFrame {
         for (int i = 0; i < nombresJugadores.length; i++) {
             etiquetasJugadores[i] = new JLabel(
                     nombresJugadores[i] + ": " + puntuaciones[i] + " puntos");
-            etiquetasJugadores[i].setFont(new Font("Arial", Font.BOLD, 16));
-            etiquetasJugadores[i].setForeground(Color.BLUE);
+            etiquetasJugadores[i].setFont(new Font("Arial", Font.BOLD, 20));
+            etiquetasJugadores[i].setForeground(Color.BLACK);
             panelJugadores.add(etiquetasJugadores[i]);
         }
 
@@ -108,10 +118,6 @@ public class TableroMemorama extends JFrame {
     }
 
     private void configurarPanelTurnos() {
-        if (nombresJugadores == null || nombresJugadores.length == 0) {
-            nombresJugadores = new String[]{"Jugador 1"};
-            puntuaciones = new int[]{0};
-        }
         JPanel panelTurno = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
         panelTurno.setBackground(new Color(240, 240, 240));
 
