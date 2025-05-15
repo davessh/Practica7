@@ -9,6 +9,7 @@ public class Menu {
     private String modoJuego;
     private TableroMemorama tablero;
     TarjetaNormal[] tarjetas = JuegoMemorama.crearTarjetasAnimales();
+    TarjetaInstrumentos[] tarjetaInstrumentos = JuegoMemorama.crearTarjetasInstrumentos();
     String[] nombresJugadores;
     int[] puntuacionesIniciales = {0, 0,0};
     public Menu() {
@@ -180,12 +181,14 @@ public class Menu {
         botonDeportistas.addActionListener(e -> {
             modoJuego = "DEPORTISTAS";
             frameSeleccion.dispose();
+            new TableroMemorama(tarjetaInstrumentos,modoJuego,nombresJugadores,puntuacionesIniciales);
 
         });
 
         JButton botonInstrumentos = crearBotonModo("INSTRUMENTOS", "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\src\\instrumentosicono.png");
         botonInstrumentos.addActionListener(e -> {
-            modoJuego = "INSTRUMENTOS";
+            modoJuego = "instrumentos";
+            new TableroMemorama(tarjetas,modoJuego,nombresJugadores,puntuacionesIniciales);
             frameSeleccion.dispose();
         });
 
