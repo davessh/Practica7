@@ -16,6 +16,8 @@ public class JuegoMemorama {
     public JuegoMemorama() {
         tablero = new TarjetaNormal[filas][columnas];
         primeraSeleccion = null;
+
+
         segundaSeleccion = null;
         tableroHabilitado = true;
         parejasEncontradas = 0;
@@ -191,15 +193,15 @@ public class JuegoMemorama {
         // Define tipos de animales para el juego (necesitamos 9 tipos para 18 tarjetas)
         String[] tiposAnimales = {
                 "tigre","lobo","aguila", "delfin","oso", "serpiente","pinguino",
-                "mono"
+                "mono","especial"
         };
 
         String[] tiposParejas = {
                 "albino","bengala","artico","gris","calva","real","rosa","narizbotella","pardo","polar",
-                "piton","cascabel","emperador","humboldt","capuchino","babuino"
+                "piton","cascabel","emperador","humboldt","capuchino","babuino","comodin","trampa"
         };
 
-        TarjetaNormal[] tarjetas = new TarjetaNormal[16];
+        TarjetaNormal[] tarjetas = new TarjetaNormal[18];
 
         int index = 0;
         for (int i = 0; i < tiposAnimales.length; i++) {
