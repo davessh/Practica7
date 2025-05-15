@@ -9,6 +9,10 @@ public class JuegoMemorama {
     private int intentosRealizados;
 
 
+    /**
+     * Constructor de la clase JuegoMemorama
+     * Inicializa un tablero de 3x6
+     */
     public JuegoMemorama() {
         tablero = new TarjetaNormal[filas][columnas];
         primeraSeleccion = null;
@@ -179,7 +183,12 @@ public class JuegoMemorama {
         return tablero[fila][columna];
     }
 
+    /**
+     * Crea un conjunto de tarjetas para un juego de 3x6 con tipos de animales
+     * @return Arreglo de tarjetas para el juego
+     */
     public static TarjetaNormal[] crearTarjetasAnimales() {
+        // Define tipos de animales para el juego (necesitamos 9 tipos para 18 tarjetas)
         String[] tiposAnimales = {
                 "tigre","lobo","aguila", "delfin","oso", "serpiente","pinguino",
                 "mono"
@@ -205,39 +214,9 @@ public class JuegoMemorama {
             System.out.println("Tarjeta " + (index) + ": " + tiposAnimales[i] + " - " + rutaImagen2);
         }
 
-        // Mezclar las tarjetas
-        mezclarTarjetas(tarjetas);
 
-        return tarjetas;
-    }
 
-    public static TarjetaInstrumentos[] crearTarjetasInstrumentos(){
-        String[] tiposInstrumentos = {
-                "saxofon","clarinete","cuerda", "bajo","flauta", "guitarra","percusion",
-                "boquilla"
-        };
-
-        String[] tiposParejas = {
-                "alto","tenor","normal","bajo","chelo","violin","normal","guitarron","normal","piccolo",
-                "normal","requinto","xilo","tarola","trombon","trompeta"
-        };
-
-        TarjetaInstrumentos[] tarjetas = new TarjetaInstrumentos[16];
-
-        int index = 0;
-        for (int i = 0; i < tiposInstrumentos.length; i++) {
-
-            String rutaImagen1 = tiposParejas[2*i] + "_" + tiposInstrumentos[i] + ".png";
-            String rutaImagen2 = tiposParejas[2*i+1] + "_" + tiposInstrumentos[i] + ".png";
-
-            tarjetas[index++] = new TarjetaInstrumentos(rutaImagen1, tiposInstrumentos[i]);
-            tarjetas[index++] = new TarjetaInstrumentos(rutaImagen2, tiposInstrumentos[i]);
-
-            System.out.println("Tarjeta " + (index-1) + ": " + tiposInstrumentos[i] + " - " + rutaImagen1);
-            System.out.println("Tarjeta " + (index) + ": " + tiposInstrumentos[i] + " - " + rutaImagen2);
-        }
-
-        // Mezclar las tarjetas
+        // Mezclar las tXarjetas
         mezclarTarjetas(tarjetas);
 
         return tarjetas;
@@ -251,19 +230,6 @@ public class JuegoMemorama {
 
             // Intercambiar
             TarjetaNormal temp = tarjetas[index];
-            tarjetas[index] = tarjetas[i];
-            tarjetas[i] = temp;
-        }
-    }
-
-    public static void mezclarTarjetas(TarjetaInstrumentos[] tarjetas) {
-        java.util.Random rnd = new java.util.Random();
-
-        for (int i = tarjetas.length - 1; i > 0; i--) {
-            int index = rnd.nextInt(i + 1);
-
-            // Intercambiar
-            TarjetaInstrumentos temp = tarjetas[index];
             tarjetas[index] = tarjetas[i];
             tarjetas[i] = temp;
         }
@@ -300,5 +266,4 @@ public class JuegoMemorama {
     public void setTableroHabilitado(boolean habilitado) {
         this.tableroHabilitado = habilitado;
     }
-
 }
