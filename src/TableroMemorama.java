@@ -11,7 +11,8 @@ public class TableroMemorama extends JFrame {
     private ArrayList<String> imagenes;
     private int primerBotonSeleccionado = -1;
     private boolean esperando = false;
-    private final String RUTA_BASE = "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\";
+    //private final String RUTA_BASE = "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\";
+    private final String RUTA_BASE = "C:\\Users\\GF76\\IdeaProjects\\Practica-7\\imagenes\\";
     private final String RUTA_PORTADA = RUTA_BASE + "portada.png";
     private String modoJuego;
     private JLabel[] etiquetasJugadores;
