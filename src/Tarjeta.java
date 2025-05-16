@@ -54,9 +54,10 @@ abstract class Tarjeta {
     public void setDescubierta(boolean descubierta) {
         this.descubierta = descubierta;
     }
+    //metodo abstracto a definirse en cada clase
     public abstract boolean tieneEfectoEspecial();
-
+    //se indica la presencia de un efecto especial
     public abstract void activarEfectoEspecial();
-
+    //se comparan tarjetas dependiendo el modo de juego
     public abstract boolean esPareja(Tarjeta otraTarjeta);
 }

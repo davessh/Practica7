@@ -33,7 +33,6 @@ public class TarjetaAnimal extends Tarjeta {
 
     @Override
     public boolean esPareja(Tarjeta otraTarjeta) {
-        // esto deberia de comparar si el identificador de las dos cartas es igual
         return true;
     }
 
@@ -41,7 +40,7 @@ public class TarjetaAnimal extends Tarjeta {
     public boolean tieneEfectoEspecial() {
         return true;
     }
-
+    //Se incluye la logica para la pareja especial
     @Override
     public void activarEfectoEspecial() {
         if (efectoActivado) return;

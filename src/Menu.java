@@ -13,7 +13,7 @@ public class Menu {
         this.cantidadDeJugadores = 0;
         empezarJuego();
     }
-
+    //Se muestra un frame que indica el inicio de mi juego
     public void empezarJuego() {
         frame = new JFrame("Memorama");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

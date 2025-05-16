@@ -19,6 +19,7 @@ public class TableroMemorama extends JFrame {
     private JLabel etiquetaTurno;
     private int paresEncontradosEnTurno = 0;
     private Timer timer;
+    private Menu menu;
 
     public TableroMemorama(JuegoMemorama juego, String[] nombresJugadores, int[] puntuacionesIniciales) {
         this.juego = juego;
@@ -206,6 +207,19 @@ public class TableroMemorama extends JFrame {
                 // Verificar si el juego ha terminado
                 if (juego.juegoCompletado()) {
                     JOptionPane.showMessageDialog(this, "Juego completado\n" + obtenerGanador());
+
+                int respuesta = JOptionPane.showConfirmDialog(
+                        null,
+                        "¿Jugar de nuevo?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION
+                );
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    menu.empezarJuego();
+                } else if (respuesta == JOptionPane.NO_OPTION) {
+                   dispose();
+                }
                 }
 
                 primerFilaSeleccionada = -1;
@@ -271,6 +285,7 @@ public class TableroMemorama extends JFrame {
             return empate.toString();
         } else {
             return "¡Ganador: " + nombresJugadores[ganadores.get(0)];
+
         }
     }
     public void sumarPuntoJugadorActual() {

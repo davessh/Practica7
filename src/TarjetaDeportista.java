@@ -17,10 +17,6 @@ class TarjetaDeportista extends Tarjeta {
         }
 
         TarjetaDeportista otra = (TarjetaDeportista) otraTarjeta;
-
-        // Dos tarjetas son pareja si:
-        // 1. Son del mismo país
-        // 2. No son la misma tarjeta (rutas diferentes)
         return this.pais.equals(otra.pais) &&
                 !this.rutaImagen.equals(otra.rutaImagen);
     }
@@ -30,6 +26,7 @@ class TarjetaDeportista extends Tarjeta {
         return true;
     }
 
+    // si se tiene efecto especial se carga el archivo para activar el efecto
     @Override
     public void activarEfectoEspecial() {
         if (tieneEfectoEspecial()) {
