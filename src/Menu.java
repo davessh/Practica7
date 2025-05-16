@@ -3,18 +3,17 @@ import java.awt.*;
 
 public class Menu {
     private JFrame frame;
-    private JuegoMemorama juego;
     private JButton botonJugar, botonSalir;
     private int cantidadDeJugadores;
     private String modoJuego;
-    private TableroMemorama tablero;
-    TarjetaNormal[] tarjetas = JuegoMemorama.crearTarjetasAnimales();
-    String[] nombresJugadores;
-    int[] puntuacionesIniciales = {0, 0,0};
+    private String[] nombresJugadores;
+    private int[] puntuacionesIniciales;
+
     public Menu() {
         this.cantidadDeJugadores = 0;
         empezarJuego();
     }
+
     public void empezarJuego() {
         frame = new JFrame("Memorama");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -27,7 +26,6 @@ public class Menu {
 
             {
                 try {
-                    //fondo = new ImageIcon("C:\\Users\\GF76\\IdeaProjects\\Practica-7\\src\\MEMORAMA.png").getImage();
                     fondo = new ImageIcon("C:\\Users\\Usuario\\IdeaProjects\\Practica7\\src\\MEMORAMA.png").getImage();
                     fondo = fondo.getScaledInstance(800, 600, Image.SCALE_SMOOTH);
                 } catch (Exception e) {
@@ -65,24 +63,21 @@ public class Menu {
         botonSalir.setMaximumSize(new Dimension(250, 55));
         botonSalir.setFont(new Font("Century Gothic", Font.BOLD, 25));
         botonSalir.setFocusPainted(false);
+        botonSalir.addActionListener(e -> System.exit(0));
         panelMenu.add(botonSalir);
 
         panelMenu.add(Box.createVerticalGlue());
-
-        botonSalir.addActionListener(e -> System.exit(0));
-        botonJugar.addActionListener(e -> {
-            frame.dispose();
-        });
 
         backgroundPanel.add(panelMenu, BorderLayout.CENTER);
         frame.add(backgroundPanel);
         frame.setVisible(true);
     }
+
     public void ingresarCantidadDeJugadores() {
         cantidadDeJugadores = 0;
-        while (cantidadDeJugadores < 2 || cantidadDeJugadores > 4) {
+        while (cantidadDeJugadores < 1 || cantidadDeJugadores > 4) { // Cambiado para permitir 1 jugador
             String input = JOptionPane.showInputDialog(frame,
-                    "Ingrese el número de jugadores (2 a 4):",
+                    "Ingrese el número de jugadores (1 a 4):",
                     "Número de Jugadores", JOptionPane.QUESTION_MESSAGE);
 
             if (input == null) {
@@ -91,9 +86,9 @@ public class Menu {
 
             try {
                 cantidadDeJugadores = Integer.parseInt(input);
-                if (cantidadDeJugadores < 2 || cantidadDeJugadores > 4) {
+                if (cantidadDeJugadores < 1 || cantidadDeJugadores > 4) {
                     JOptionPane.showMessageDialog(frame,
-                            "Por favor ingrese un número entre 2 y 4",
+                            "Por favor ingrese un número entre 1 y 4",
                             "Error", JOptionPane.ERROR_MESSAGE);
                 }
             } catch (NumberFormatException e) {
@@ -105,8 +100,9 @@ public class Menu {
         ingresarNombreJugadores();
     }
 
-    public void ingresarNombreJugadores(){
+    public void ingresarNombreJugadores() {
         nombresJugadores = new String[cantidadDeJugadores];
+        puntuacionesIniciales = new int[cantidadDeJugadores]; // Inicializar array de puntuaciones
 
         for (int i = 0; i < cantidadDeJugadores; i++) {
             String nombre = JOptionPane.showInputDialog(frame,
@@ -118,6 +114,7 @@ public class Menu {
             }
 
             nombresJugadores[i] = nombre;
+            puntuacionesIniciales[i] = 0; // Inicializar puntuación en 0
         }
 
         seleccionarModoDeJuego();
@@ -161,6 +158,7 @@ public class Menu {
 
         return boton;
     }
+
     public void seleccionarModoDeJuego() {
         JFrame frameSeleccion = new JFrame("Modo de Juego");
         frameSeleccion.setSize(600, 400);
@@ -173,20 +171,21 @@ public class Menu {
         botonAnimales.addActionListener(e -> {
             modoJuego = "animales";
             frameSeleccion.dispose();
-            new TableroMemorama(tarjetas,modoJuego,nombresJugadores,puntuacionesIniciales);
+            iniciarJuego();
         });
 
         JButton botonDeportistas = crearBotonModo("DEPORTISTAS", "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\src\\deportesicono.png");
         botonDeportistas.addActionListener(e -> {
-            modoJuego = "DEPORTISTAS";
+            modoJuego = "deportistas";
             frameSeleccion.dispose();
-
+            iniciarJuego();
         });
 
         JButton botonInstrumentos = crearBotonModo("INSTRUMENTOS", "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\src\\instrumentosicono.png");
         botonInstrumentos.addActionListener(e -> {
-            modoJuego = "INSTRUMENTOS";
+            modoJuego = "instrumentos";
             frameSeleccion.dispose();
+            iniciarJuego();
         });
 
         panelModos.add(botonAnimales);
@@ -195,6 +194,15 @@ public class Menu {
 
         frameSeleccion.add(panelModos);
         frameSeleccion.setVisible(true);
+    }
+
+    private void iniciarJuego() {
+        JuegoMemorama juego = new JuegoMemorama(modoJuego);
+
+        new TableroMemorama(juego, nombresJugadores, puntuacionesIniciales);
+
+        // Cerrar el menú principal
+        frame.dispose();
     }
 
 }

@@ -1,95 +1,108 @@
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.util.Collections;
 import java.util.ArrayList;
 
 public class TableroMemorama extends JFrame {
-    private JButton[] botones;
-    private TarjetaNormal[] tarjetas;
-    private ArrayList<String> imagenes;
-    private int primerBotonSeleccionado = -1;
+    private JButton[][] botones;
+    private JuegoMemorama juego;
+    private int primerFilaSeleccionada = -1;
+    private int primerColumnaSeleccionada = -1;
     private boolean esperando = false;
-    //private final String RUTA_BASE = "C:\\Users\\Usuario\\IdeaProjects\\Practica7\\imagenes\\";
-    private final String RUTA_BASE = "C:\\Users\\GF76\\IdeaProjects\\Practica-7\\imagenes\\";
+    private final String RUTA_BASE = "C:\\Users\\Usuario\\IdeaProjects\\Practica7.2\\imagenes\\";
     private final String RUTA_PORTADA = RUTA_BASE + "portada.png";
-    private String modoJuego;
     private JLabel[] etiquetasJugadores;
     private JPanel panelJugadores;
-    private JuegoMemorama memorama;
     private int jugadorActual = 0;
     private int[] puntuaciones;
     private String[] nombresJugadores;
     private JLabel etiquetaTurno;
     private int paresEncontradosEnTurno = 0;
+    private Timer timer;
 
-    public TableroMemorama(TarjetaNormal[] tarjetasParam, String modoJuego, String[] nombresJugadores, int[] puntuacionesIniciales) {
-        setTitle("Juego Memorama");
-        //setLayout(new GridLayout(3, 6));  // 4x4 para las 16 tarjetas
+    public TableroMemorama(JuegoMemorama juego, String[] nombresJugadores, int[] puntuacionesIniciales) {
+        this.juego = juego;
+        this.nombresJugadores = nombresJugadores;
+        this.puntuaciones = puntuacionesIniciales;
+
+        setTitle("Juego Memorama - " + juego.getModoJuego().toUpperCase());
         setLayout(new BorderLayout());
-        JPanel panelBotones = new JPanel(new GridLayout(3,6));
-        panelBotones.setPreferredSize(new Dimension(1200, 600));
-        setSize(1000, 500);  // Tamaño más grande para ver mejor las imágenes
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLocationRelativeTo(null);
 
-
-        // Asignar las tarjetas recibidas al campo de la clase
-        this.tarjetas = tarjetasParam;
-        this.modoJuego = modoJuego;
-        configurarPanelJugadores(nombresJugadores, puntuacionesIniciales);
+        // Configurar paneles de jugadores y turno
+        configurarPanelJugadores();
         configurarPanelTurnos();
 
-        JPanel panelModoJuego = new JPanel();
-        JLabel modoJuegoLabel = new JLabel("Modo de juego: " + modoJuego.toUpperCase());
-        modoJuegoLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        panelModoJuego.add(modoJuegoLabel);
-        add(panelModoJuego, BorderLayout.SOUTH);
+        // Panel principal para los botones
+        JPanel panelBotones = new JPanel(new GridLayout(juego.getFilas(), juego.getColumnas()));
+        panelBotones.setPreferredSize(new Dimension(1200, 600));
 
-        imagenes = new ArrayList<>();
-        for (int i = 0; i < tarjetas.length; i++) {
-            String rutaCompleta = RUTA_BASE + modoJuego + "\\" + tarjetas[i].getRutaImagen();
-            imagenes.add(rutaCompleta);
-        }
-        Dimension tamañoBotones = new Dimension(200,200);
         // Crear botones para el tablero
-        botones = new JButton[18];
-        for (int i = 0; i < botones.length; i++) {
-            botones[i] = new JButton();
+        botones = new JButton[juego.getFilas()][juego.getColumnas()];
+        Dimension tamañoBotones = new Dimension(200, 200);
 
-            botones[i].setPreferredSize(tamañoBotones);
-            botones[i].setMinimumSize(tamañoBotones);
-            botones[i].setMaximumSize(tamañoBotones);
-            ImageIcon iconoPortada = new ImageIcon(RUTA_PORTADA);
+        for (int i = 0; i < juego.getFilas(); i++) {
+            for (int j = 0; j < juego.getColumnas(); j++) {
+                botones[i][j] = new JButton();
+                botones[i][j].setPreferredSize(tamañoBotones);
 
-            // Redimensionar la imagen
-            Image img = iconoPortada.getImage();
-            Image imgRedimensionada = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-            iconoPortada = new ImageIcon(imgRedimensionada);
+                // Configurar imagen de portada
+                ImageIcon iconoPortada = new ImageIcon(RUTA_PORTADA);
+                Image img = iconoPortada.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+                botones[i][j].setIcon(new ImageIcon(img));
+                botones[i][j].setBackground(Color.LIGHT_GRAY);
+                botones[i][j].setFocusable(false);
 
-            botones[i].setIcon(iconoPortada);
-            botones[i].setBackground(Color.LIGHT_GRAY);
-            botones[i].setFocusable(false);
+                final int fila = i;
+                final int columna = j;
+                botones[i][j].addActionListener(e -> botonClickeado(fila, columna));
 
-            final int indice = i;
-            botones[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    botonClickeado(indice);
-                }
-            });
-            panelBotones.add(botones[i]);
+                panelBotones.add(botones[i][j]);
+            }
         }
-        add(panelBotones, BorderLayout.CENTER);
-        setMinimumSize(new Dimension(800, 450));
 
+        add(panelBotones, BorderLayout.CENTER);
+
+        // Panel de preferencias en la parte inferior
+        JPanel panelPreferencias = new JPanel(new BorderLayout());
+        panelPreferencias.setBorder(BorderFactory.createTitledBorder("Juego en curso"));
+
+        // Panel para el modo de juego
+        JPanel panelModoJuego = new JPanel();
+        JLabel modoJuegoLabel = new JLabel("Modo de juego: " + juego.getModoJuego().toUpperCase());
+        modoJuegoLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        panelModoJuego.add(modoJuegoLabel);
+
+        // Panel para el turno actual
+        JPanel panelTurnoActual = new JPanel();
+        etiquetaTurno = new JLabel("Turno actual: " + nombresJugadores[jugadorActual]);
+        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 14));
+        etiquetaTurno.setForeground(Color.RED);
+        panelTurnoActual.add(etiquetaTurno);
+
+        panelPreferencias.add(panelModoJuego, BorderLayout.WEST);
+        panelPreferencias.add(panelTurnoActual, BorderLayout.EAST);
+
+        add(panelPreferencias, BorderLayout.SOUTH);
+
+        setMinimumSize(new Dimension(800, 450));
         setSize(1000, 700);
         setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setVisible(true);
+        configurarTarjetasEspeciales();
+        if (juego.getModoJuego().equalsIgnoreCase("animales")) {
+            String parejaEspecial = TarjetaAnimal.getParejaEspecial();
+            if (parejaEspecial != null) {
+                JOptionPane.showMessageDialog(this,
+                        "¡Bienvenido al modo Animales!\nLa pareja especial de esta partida es: " +
+                                parejaEspecial.toUpperCase() + "\nEncontrarla te dará 2 puntos en lugar de 1.",
+                        "Pareja Especial",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }
 
-    private void configurarPanelJugadores(String[] nombresJugadores, int[] puntuaciones) {
+    private void configurarPanelJugadores() {
         panelJugadores = new JPanel();
         panelJugadores.setLayout(new FlowLayout(FlowLayout.CENTER, 30, 10));
         panelJugadores.setBackground(new Color(240, 240, 240));
@@ -109,19 +122,6 @@ public class TableroMemorama extends JFrame {
     }
 
     private void configurarPanelTurnos() {
-        if (nombresJugadores == null || nombresJugadores.length == 0) {
-            nombresJugadores = new String[]{"Jugador 1"};
-            puntuaciones = new int[]{0};
-        }
-        JPanel panelTurno = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 5));
-        panelTurno.setBackground(new Color(240, 240, 240));
-
-        etiquetaTurno = new JLabel("Turno de: " + nombresJugadores[jugadorActual]);
-        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 16));
-        etiquetaTurno.setForeground(Color.RED);
-
-        panelTurno.add(etiquetaTurno);
-        add(panelTurno, BorderLayout.SOUTH);
     }
 
     private void actualizarPuntuacion() {
@@ -133,87 +133,205 @@ public class TableroMemorama extends JFrame {
 
     private void cambiarTurno() {
         jugadorActual = (jugadorActual + 1) % nombresJugadores.length;
-        etiquetaTurno.setText("Turno de: " + nombresJugadores[jugadorActual]);
+        etiquetaTurno.setText("Turno actual: " + nombresJugadores[jugadorActual]);
         paresEncontradosEnTurno = 0;
     }
 
-    private void botonClickeado(int indice) {
-        // Verificar si el botón ya está descubierto o si estamos esperando
-        if (esperando || botones[indice].isEnabled() == false) {
+    private void botonClickeado(int fila, int columna) {
+        if (!juego.isTableroHabilitado() || esperando) {
             return;
         }
 
-        if (indice == primerBotonSeleccionado) {
-            return;
+        // Seleccionar la tarjeta en el juego
+        int estadoSeleccion = juego.seleccionarTarjeta(fila, columna);
+
+        if (estadoSeleccion == 0) {
+            return; // Selección inválida
         }
 
-        // Cargar la imagen y redimensionarla
-        String rutaImagen = imagenes.get(indice);
+        // Mostrar la imagen de la tarjeta
+        mostrarImagenTarjeta(fila, columna);
+
+        if (estadoSeleccion == 1) {
+            // Primera tarjeta
+            primerFilaSeleccionada = fila;
+            primerColumnaSeleccionada = columna;
+        } else if (estadoSeleccion == 2) {
+            // Segunda
+            esperando = true;
+
+            timer = new Timer(1000, e -> procesarSeleccion(fila, columna));
+            timer.setRepeats(false);
+            timer.start();
+        }
+    }
+
+    private void mostrarImagenTarjeta(int fila, int columna) {
+        Tarjeta tarjeta = juego.getTarjeta(fila, columna);
+        if (tarjeta == null) return;
+
+        String rutaImagen = RUTA_BASE + juego.getModoJuego() + "\\" + tarjeta.getRutaImagen();
         ImageIcon icono = new ImageIcon(rutaImagen);
 
-        // Redimensionar la imagen para que se vea mejor
-        Image img = icono.getImage();
-        if (img != null) {
-            Image imgRedimensionada = img.getScaledInstance(180, 180, Image.SCALE_SMOOTH);
-            icono = new ImageIcon(imgRedimensionada);
+        Image img = icono.getImage().getScaledInstance(180, 180, Image.SCALE_SMOOTH);
+        botones[fila][columna].setIcon(new ImageIcon(img));
+    }
+
+    private void procesarSeleccion(int segundaFila, int segundaColumna) {
+        boolean sonPareja = juego.procesarSeleccion();
+        String primeraCarta = getPrimeraCartaSeleccionada();
+        String segundaCarta = getSegundaCartaSeleccionada(segundaFila, segundaColumna);
+
+        System.out.println("Cartas seleccionadas: " + primeraCarta + " y " + segundaCarta);
+
+        if (sonPareja) {
+            Tarjeta tarjeta1 = juego.getTarjeta(primerFilaSeleccionada, primerColumnaSeleccionada);
+            Tarjeta tarjeta2 = juego.getTarjeta(segundaFila, segundaColumna);
+
+            // Activar efectos especiales primero (mostrar GIF)
+            if (tarjeta1.tieneEfectoEspecial()) tarjeta1.activarEfectoEspecial();
+            if (tarjeta2.tieneEfectoEspecial()) tarjeta2.activarEfectoEspecial();
+
+            // Configurar un temporizador para deshabilitar los botones después de mostrar el GIF
+            Timer timerDeshabilitar = new Timer(1000, e -> {
+                // Sumar punto (el efecto especial puede sumar puntos extra)
+                puntuaciones[jugadorActual]++;
+                paresEncontradosEnTurno++;
+                actualizarPuntuacion();
+
+                // Deshabilitar los botones de la pareja encontrada
+                botones[primerFilaSeleccionada][primerColumnaSeleccionada].setEnabled(false);
+                botones[segundaFila][segundaColumna].setEnabled(false);
+
+                // Verificar si el juego ha terminado
+                if (juego.juegoCompletado()) {
+                    JOptionPane.showMessageDialog(this, "Juego completado\n" + obtenerGanador());
+                }
+
+                primerFilaSeleccionada = -1;
+                primerColumnaSeleccionada = -1;
+                esperando = false;
+            });
+            timerDeshabilitar.setRepeats(false);
+            timerDeshabilitar.start();
         } else {
-            System.out.println("Error: No se pudo cargar la imagen: " + rutaImagen);
-            botones[indice].setBackground(Color.RED);
-            botones[indice].setText("Error");
-            return;
+            // Para no parejas, mantener el comportamiento original
+            voltearTarjetasNoEmparejadas();
+
+            if (paresEncontradosEnTurno == 0) {
+                cambiarTurno();
+            } else {
+                paresEncontradosEnTurno = 0;
+                cambiarTurno();
+            }
+
+            primerFilaSeleccionada = -1;
+            primerColumnaSeleccionada = -1;
+            esperando = false;
         }
+    }
 
-        botones[indice].setIcon(icono);
+    private void voltearTarjetasNoEmparejadas() {
+        juego.voltearTarjetasNoEmparejadas();
 
-        // Si es la primera selección
-        if (primerBotonSeleccionado == -1) {
-            primerBotonSeleccionado = indice;
-        } else {
-            // Si es la segunda selección
-            esperando = true;
-            final int primerIndice = primerBotonSeleccionado;
+        ImageIcon iconoPortada = new ImageIcon(RUTA_PORTADA);
+        Image imgPortada = iconoPortada.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+        iconoPortada = new ImageIcon(imgPortada);
 
-            // Verificamos que los índices sean válidos antes de acceder al array
-            if (primerIndice >= 0 && primerIndice < tarjetas.length &&
-                    indice >= 0 && indice < tarjetas.length) {
-
-                // Verificamos si las tarjetas forman una pareja
-                if (tarjetas[primerIndice] != null && tarjetas[indice] != null &&
-                        tarjetas[primerIndice].getIdentificador().equals(tarjetas[indice].getIdentificador())) {
-                    puntuaciones[jugadorActual]++;
-                    paresEncontradosEnTurno++;
-                    actualizarPuntuacion();
-                    //JOptionPane.showMessageDialog(this, "Pareja encontrada");
-                    botones[primerIndice].setEnabled(false);
-                    botones[indice].setEnabled(false);
-                    esperando = false;
-                } else {
-                    Timer timer = new Timer(1000, new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            // Volver a mostrar la imagen de portada
-                            ImageIcon iconoPortada = new ImageIcon(RUTA_PORTADA);
-                            Image img = iconoPortada.getImage();
-                            Image imgRedimensionada = img.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
-                            iconoPortada = new ImageIcon(imgRedimensionada);
-
-                            botones[primerIndice].setIcon(iconoPortada);
-                            botones[indice].setIcon(iconoPortada);
-                            esperando = false;
-                        }
-                    });
-                    timer.setRepeats(false);
-                    timer.start();
-
-                    if (paresEncontradosEnTurno == 0) {
-                        cambiarTurno();
-                    } else {
-                        paresEncontradosEnTurno = 0;
-                    }
+        for (int i = 0; i < juego.getFilas(); i++) {
+            for (int j = 0; j < juego.getColumnas(); j++) {
+                Tarjeta tarjeta = juego.getTarjeta(i, j);
+                if (tarjeta != null && !tarjeta.tienePareja() && !tarjeta.estaDescubierta()) {
+                    botones[i][j].setIcon(iconoPortada);
                 }
             }
-            primerBotonSeleccionado = -1;
         }
     }
+
+    private String obtenerGanador() {
+        int maxPuntos = -1;
+        ArrayList<Integer> ganadores = new ArrayList<>();
+
+        for (int i = 0; i < puntuaciones.length; i++) {
+            if (puntuaciones[i] > maxPuntos) {
+                maxPuntos = puntuaciones[i];
+                ganadores.clear();
+                ganadores.add(i);
+            } else if (puntuaciones[i] == maxPuntos) {
+                ganadores.add(i);
+            }
+        }
+
+        if (ganadores.size() > 1) {
+            StringBuilder empate = new StringBuilder("¡Empate entre: ");
+            for (int i = 0; i < ganadores.size(); i++) {
+                if (i > 0) empate.append(", ");
+                empate.append(nombresJugadores[ganadores.get(i)]);
+            }
+            return empate.toString();
+        } else {
+            return "¡Ganador: " + nombresJugadores[ganadores.get(0)];
+        }
+    }
+    public void sumarPuntoJugadorActual() {
+        puntuaciones[jugadorActual]++;
+        actualizarPuntuacion();
+        paresEncontradosEnTurno++;
+
+        // Verificar si con este punto extra se completa el juego
+        if (juego.juegoCompletado()) {
+            JOptionPane.showMessageDialog(this, "Juego completado\n" + obtenerGanador());
+        }
     }
 
+    /**
+     * Fuerza un cambio de turno (para el efecto de la carta trampa)
+     */
+    public void forzarCambioTurno() {
+        cambiarTurno();
+    }
+
+    /**
+     * Método que debe llamarse en la inicialización del juego para configurar
+     * la referencia del tablero en las cartas especiales
+     */
+    public void configurarTarjetasEspeciales() {
+        for (int i = 0; i < juego.getFilas(); i++) {
+            for (int j = 0; j < juego.getColumnas(); j++) {
+                Tarjeta tarjeta = juego.getTarjeta(i, j);
+                if (tarjeta instanceof TarjetaAnimal) {
+                    ((TarjetaAnimal) tarjeta).setTablero(this);
+                } else if (tarjeta instanceof TarjetaInstrumento) {
+                    ((TarjetaInstrumento) tarjeta).setTablero(this);
+                }
+            }
+        }
+    }
+
+    public String getPrimeraCartaSeleccionada() {
+        if (primerFilaSeleccionada == -1 || primerColumnaSeleccionada == -1) {
+            return null;
+        }
+        Tarjeta tarjeta = juego.getTarjeta(primerFilaSeleccionada, primerColumnaSeleccionada);
+        return tarjeta != null ? tarjeta.getIdentificador() : null;
+    }
+
+
+    public String getSegundaCartaSeleccionada(int fila, int columna) {
+        Tarjeta tarjeta = juego.getTarjeta(fila, columna);
+        return tarjeta != null ? tarjeta.getIdentificador() : null;
+    }
+
+    public int getJugadorActual() {
+        return jugadorActual;
+    }
+    public JButton[][] getBotones() {
+        return botones;
+    }
+    public String getRUTA_BASE() {
+        return RUTA_BASE;
+    }
+    public JuegoMemorama getJuego() {
+        return juego;
+    }
+}

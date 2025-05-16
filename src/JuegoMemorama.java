@@ -1,27 +1,34 @@
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Random;
+
 public class JuegoMemorama {
-    private TarjetaNormal[][] tablero;
+    private Tarjeta[][] tablero;
     private int filas = 3;
     private int columnas = 6;
-    private TarjetaNormal primeraSeleccion;
-    private TarjetaNormal segundaSeleccion;
+    private Tarjeta primeraSeleccion;
+    private Tarjeta segundaSeleccion;
     private boolean tableroHabilitado;
     private int parejasEncontradas;
     private int intentosRealizados;
-
+    private String modoJuego;
 
     /**
      * Constructor de la clase JuegoMemorama
-     * Inicializa un tablero de 3x6
+     * Inicializa un tablero de 3x6 con el modo de juego especificado
+     * @param modoJuego El modo de juego: "animales", "deportistas", "instrumentos"
      */
-    public JuegoMemorama() {
-        tablero = new TarjetaNormal[filas][columnas];
+    public JuegoMemorama(String modoJuego) {
+        tablero = new Tarjeta[filas][columnas];
+        this.modoJuego = modoJuego;
         primeraSeleccion = null;
-
-
         segundaSeleccion = null;
         tableroHabilitado = true;
         parejasEncontradas = 0;
         intentosRealizados = 0;
+
+        // Inicializa el tablero con las tarjetas según el modo de juego
+        inicializarTablero(crearTarjetas(modoJuego));
     }
 
     /**
@@ -29,15 +36,17 @@ public class JuegoMemorama {
      * @param tarjetas Lista de tarjetas para el juego (debe contener 18 tarjetas)
      * @return true si la inicialización fue exitosa, false en caso contrario
      */
-    public boolean inicializarTablero(TarjetaNormal[] tarjetas) {
-        if (tarjetas.length != filas * columnas) {
+    public boolean inicializarTablero(ArrayList<Tarjeta> tarjetas) {
+        if (tarjetas.size() != filas * columnas) {
             return false;
         }
+
+        Collections.shuffle(tarjetas); // Mezclamos las tarjetas
 
         int indice = 0;
         for (int i = 0; i < filas; i++) {
             for (int j = 0; j < columnas; j++) {
-                tablero[i][j] = tarjetas[indice++];
+                tablero[i][j] = tarjetas.get(indice++);
             }
         }
 
@@ -67,7 +76,7 @@ public class JuegoMemorama {
             return 0;
         }
 
-        TarjetaNormal tarjetaSeleccionada = tablero[fila][columna];
+        Tarjeta tarjetaSeleccionada = tablero[fila][columna];
 
         // Verificar si la tarjeta ya está descubierta o tiene pareja
         if (tarjetaSeleccionada.estaDescubierta() || tarjetaSeleccionada.tienePareja()) {
@@ -96,7 +105,7 @@ public class JuegoMemorama {
      */
     public boolean verificarPareja() {
         if (primeraSeleccion != null && segundaSeleccion != null) {
-            return primeraSeleccion.esPareja(segundaSeleccion);
+            return primeraSeleccion.getIdentificador().equals(segundaSeleccion.getIdentificador());
         }
         return false;
     }
@@ -171,13 +180,8 @@ public class JuegoMemorama {
         return parejasEncontradas;
     }
 
-    /**
-     * Obtiene la tarjeta en la posición indicada
-     * @param fila Fila de la tarjeta
-     * @param columna Columna de la tarjeta
-     * @return La tarjeta en esa posición
-     */
-    public TarjetaNormal getTarjeta(int fila, int columna) {
+
+    public Tarjeta getTarjeta(int fila, int columna) {
         if (fila < 0 || fila >= filas || columna < 0 || columna >= columnas) {
             return null;
         }
@@ -185,87 +189,135 @@ public class JuegoMemorama {
         return tablero[fila][columna];
     }
 
+    public ArrayList<Tarjeta> crearTarjetas(String modoJuego) {
+        switch(modoJuego.toLowerCase()) {
+            case "animales":
+                return crearTarjetasAnimales();
+            case "deportistas":
+                return crearTarjetasDeportistas();
+            case "instrumentos":
+                return crearTarjetasInstrumentos();
+            default:
+                return crearTarjetasAnimales(); // Modo por defecto
+        }
+    }
+
     /**
-     * Crea un conjunto de tarjetas para un juego de 3x6 con tipos de animales
-     * @return Arreglo de tarjetas para el juego
+     * Crea un conjunto de tarjetas de animales
+     * @return ArrayList de tarjetas de animales
      */
-    public static TarjetaNormal[] crearTarjetasAnimales() {
+    private ArrayList<Tarjeta> crearTarjetasAnimales() {
+        ArrayList<Tarjeta> tarjetas = new ArrayList<>();
+
         // Define tipos de animales para el juego (necesitamos 9 tipos para 18 tarjetas)
         String[] tiposAnimales = {
-                "tigre","lobo","aguila", "delfin","oso", "serpiente","pinguino",
-                "mono","especial"
+                "tigre", "lobo", "aguila", "delfin", "oso",
+                "serpiente", "pinguino", "mono", "especial"
         };
 
         String[] tiposParejas = {
-                "albino","bengala","artico","gris","calva","real","rosa","narizbotella","pardo","polar",
-                "piton","cascabel","emperador","humboldt","capuchino","babuino","comodin","trampa"
+                "albino", "bengala", "artico", "gris", "calva", "real", "rosa", "narizbotella", "pardo", "polar",
+                "piton", "cascabel", "emperador", "humboldt", "capuchino", "babuino", "comodin", "trampa"
         };
 
-        TarjetaNormal[] tarjetas = new TarjetaNormal[18];
-
-        int index = 0;
         for (int i = 0; i < tiposAnimales.length; i++) {
-
             String rutaImagen1 = tiposParejas[2*i] + "_" + tiposAnimales[i] + ".jpg";
             String rutaImagen2 = tiposParejas[2*i+1] + "_" + tiposAnimales[i] + ".jpg";
 
-            tarjetas[index++] = new TarjetaNormal(rutaImagen1,tiposAnimales[i]);
-            tarjetas[index++] = new TarjetaNormal(rutaImagen2,tiposAnimales[i]);
-
-            System.out.println("Tarjeta " + (index-1) + ": " + tiposAnimales[i] + " - " + rutaImagen1);
-            System.out.println("Tarjeta " + (index) + ": " + tiposAnimales[i] + " - " + rutaImagen2);
+            tarjetas.add(new TarjetaAnimal(rutaImagen1, tiposAnimales[i]));
+            tarjetas.add(new TarjetaAnimal(rutaImagen2, tiposAnimales[i]));
         }
-
-
-
-        // Mezclar las tXarjetas
-        mezclarTarjetas(tarjetas);
 
         return tarjetas;
     }
 
-    public static void mezclarTarjetas(TarjetaNormal[] tarjetas) {
-        java.util.Random rnd = new java.util.Random();
+    /**
+     * Crea un conjunto de tarjetas de deportistas
+     * @return ArrayList de tarjetas de deportistas
+     */
+    private ArrayList<Tarjeta> crearTarjetasDeportistas() {
+        ArrayList<Tarjeta> tarjetas = new ArrayList<>();
 
-        for (int i = tarjetas.length - 1; i > 0; i--) {
-            int index = rnd.nextInt(i + 1);
+        // Define países y sus deportistas (9 países para 18 tarjetas)
+        String[] paises = {
+                "alemania", "argentina", "brasil", "corea", "españa",
+                "mexico", "portugal", "usa", "polonia"
+        };
 
-            // Intercambiar
-            TarjetaNormal temp = tarjetas[index];
-            tarjetas[index] = tarjetas[i];
-            tarjetas[i] = temp;
+        String[] deportistas = {
+                "bandera_alemania", "kroos_alemania",
+                "bandera_argentina", "messi_argentina",
+                "bandera_brasil", "neymar_brasil",
+                "bandera_corea", "son_corea",
+                "bandera_españa", "iniesta_españa",
+                "bandera_mexico", "chicharito_mexico",
+                "bandera_portugal", "cristiano_portugal",
+                "bandera_usa", "pulisic_usa",
+                "bandera_polonia","lewandoski_polonia",
+        };
+
+        for (int i = 0; i < paises.length; i++) {
+            String rutaImagen1 = deportistas[2*i] + ".png";
+            String rutaImagen2 = deportistas[2*i+1] + ".png";
+
+            tarjetas.add(new TarjetaDeportista(rutaImagen1, paises[i]));
+            tarjetas.add(new TarjetaDeportista(rutaImagen2, paises[i]));
         }
+
+        return tarjetas;
     }
 
-    /**
-     * Obtiene el número de filas del tablero
-     * @return Número de filas
-     */
+    private ArrayList<Tarjeta> crearTarjetasInstrumentos() {
+        ArrayList<Tarjeta> tarjetas = new ArrayList<>();
+
+        String[] tiposInstrumentos = {
+                "saxofon", "clarinete", "cuerda", "bajo", "flauta",
+                "guitarra", "percusion", "boquilla", "orquesta"
+        };
+
+        String[] instrumentos = {
+                "alto_saxofon", "tenor_saxofon",
+                "bajo_clarinete", "normal_clarinete",
+                "chelo_cuerda", "violin_cuerda",
+                "guitarron_bajo", "normal_bajo",
+                "normal_flauta", "piccolo_flauta",
+                "normal_guitarra", "requinto_guitarra",
+                "tarola_percusion", "xilo_percusion",
+                "trombon_boquilla", "trompeta_boquilla",
+                "director_orquesta", "orquesta_orquesta"
+        };
+
+        for (int i = 0; i < tiposInstrumentos.length; i++) {
+            String rutaImagen1 = instrumentos[2*i] + ".png";
+            String rutaImagen2 = instrumentos[2*i+1] + ".png";
+
+            tarjetas.add(new TarjetaInstrumento(rutaImagen1, tiposInstrumentos[i]));
+            tarjetas.add(new TarjetaInstrumento(rutaImagen2, tiposInstrumentos[i]));
+
+            System.out.println(rutaImagen1);
+            System.out.println(rutaImagen2);
+        }
+
+        return tarjetas;
+    }
+
     public int getFilas() {
         return filas;
     }
 
-    /**
-     * Obtiene el número de columnas del tablero
-     * @return Número de columnas
-     */
     public int getColumnas() {
         return columnas;
     }
 
-    /**
-     * Verifica si el tablero está habilitado para seleccionar tarjetas
-     * @return true si está habilitado, false en caso contrario
-     */
     public boolean isTableroHabilitado() {
         return tableroHabilitado;
     }
 
-    /**
-     * Habilita o deshabilita el tablero
-     * @param habilitado Estado de habilitación
-     */
     public void setTableroHabilitado(boolean habilitado) {
         this.tableroHabilitado = habilitado;
+    }
+
+    public String getModoJuego() {
+        return modoJuego;
     }
 }
