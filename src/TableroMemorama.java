@@ -49,7 +49,7 @@ public class TableroMemorama extends JFrame {
                 ImageIcon iconoPortada = new ImageIcon(RUTA_PORTADA);
                 Image img = iconoPortada.getImage().getScaledInstance(200, 200, Image.SCALE_SMOOTH);
                 botones[i][j].setIcon(new ImageIcon(img));
-                botones[i][j].setBackground(Color.LIGHT_GRAY);
+                botones[i][j].setBackground(Color.BLUE);
                 botones[i][j].setFocusable(false);
 
                 final int fila = i;
@@ -69,13 +69,13 @@ public class TableroMemorama extends JFrame {
         // Panel para el modo de juego
         JPanel panelModoJuego = new JPanel();
         JLabel modoJuegoLabel = new JLabel("Modo de juego: " + juego.getModoJuego().toUpperCase());
-        modoJuegoLabel.setFont(new Font("Arial", Font.BOLD, 14));
+        modoJuegoLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
         panelModoJuego.add(modoJuegoLabel);
 
         // Panel para el turno actual
         JPanel panelTurnoActual = new JPanel();
         etiquetaTurno = new JLabel("Turno actual: " + nombresJugadores[jugadorActual]);
-        etiquetaTurno.setFont(new Font("Arial", Font.BOLD, 14));
+        etiquetaTurno.setFont(new Font("Segoe UI", Font.BOLD, 17));
         etiquetaTurno.setForeground(Color.RED);
         panelTurnoActual.add(etiquetaTurno);
 
@@ -113,8 +113,8 @@ public class TableroMemorama extends JFrame {
         for (int i = 0; i < nombresJugadores.length; i++) {
             etiquetasJugadores[i] = new JLabel(
                     nombresJugadores[i] + ": " + puntuaciones[i] + " puntos");
-            etiquetasJugadores[i].setFont(new Font("Arial", Font.BOLD, 16));
-            etiquetasJugadores[i].setForeground(Color.BLUE);
+            etiquetasJugadores[i].setFont(new Font("Segoe UI", Font.BOLD, 23));
+            etiquetasJugadores[i].setForeground(Color.BLACK);
             panelJugadores.add(etiquetasJugadores[i]);
         }
 
@@ -263,7 +263,7 @@ public class TableroMemorama extends JFrame {
         }
 
         if (ganadores.size() > 1) {
-            StringBuilder empate = new StringBuilder("¡Empate entre: ");
+            StringBuilder empate = new StringBuilder("Empate entre: ");
             for (int i = 0; i < ganadores.size(); i++) {
                 if (i > 0) empate.append(", ");
                 empate.append(nombresJugadores[ganadores.get(i)]);
@@ -284,17 +284,10 @@ public class TableroMemorama extends JFrame {
         }
     }
 
-    /**
-     * Fuerza un cambio de turno (para el efecto de la carta trampa)
-     */
     public void forzarCambioTurno() {
         cambiarTurno();
     }
 
-    /**
-     * Método que debe llamarse en la inicialización del juego para configurar
-     * la referencia del tablero en las cartas especiales
-     */
     public void configurarTarjetasEspeciales() {
         for (int i = 0; i < juego.getFilas(); i++) {
             for (int j = 0; j < juego.getColumnas(); j++) {

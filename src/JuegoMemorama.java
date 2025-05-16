@@ -207,17 +207,19 @@ public class JuegoMemorama {
      * @return ArrayList de tarjetas de animales
      */
     private ArrayList<Tarjeta> crearTarjetasAnimales() {
+        TarjetaAnimal.establecerParejaEspecial("animales");
+
         ArrayList<Tarjeta> tarjetas = new ArrayList<>();
 
         // Define tipos de animales para el juego (necesitamos 9 tipos para 18 tarjetas)
         String[] tiposAnimales = {
                 "tigre", "lobo", "aguila", "delfin", "oso",
-                "serpiente", "pinguino", "mono", "especial"
+                "serpiente", "pinguino", "mono", "perro"
         };
 
         String[] tiposParejas = {
                 "albino", "bengala", "artico", "gris", "calva", "real", "rosa", "narizbotella", "pardo", "polar",
-                "piton", "cascabel", "emperador", "humboldt", "capuchino", "babuino", "comodin", "trampa"
+                "piton", "cascabel", "emperador", "humboldt", "capuchino", "babuino", "chihuahua", "bulldog"
         };
 
         for (int i = 0; i < tiposAnimales.length; i++) {
